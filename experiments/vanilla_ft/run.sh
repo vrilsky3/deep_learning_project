@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export PROJECT_DIR=/llmft
+export PROJECT_DIR=/Users/hoyeob.kim/git/deep_learning_project
 source $PROJECT_DIR/scripts/misc/setup.sh
 
 # args: task_name, max_train_samples, bsz, num_gpus, model_name_or_path, port
