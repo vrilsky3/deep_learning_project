@@ -1,0 +1,62 @@
+{'train_runtime': 55.0251, 'train_samples_per_second': 1.163, 'train_steps_per_second': 0.036, 'train_loss': 0.782958984375, 'epoch': 1.0}
+100%|█████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:55<00:00, 27.51s/it]
+***** train metrics *****
+  epoch                    =        1.0
+  train_loss               =      0.783
+  train_runtime            = 0:00:55.02
+  train_samples            =         64
+  train_samples_per_second =      1.163
+  train_steps_per_second   =      0.036
+wandb:
+wandb: Run history:
+wandb:           eval/hans-lexical_overlap-contradiction_accuracy ▁
+wandb:               eval/hans-lexical_overlap-contradiction_loss ▁
+wandb:            eval/hans-lexical_overlap-contradiction_runtime ▁
+wandb: eval/hans-lexical_overlap-contradiction_samples_per_second ▁
+wandb:   eval/hans-lexical_overlap-contradiction_steps_per_second ▁
+wandb:              eval/hans-lexical_overlap-entailment_accuracy ▁
+wandb:                  eval/hans-lexical_overlap-entailment_loss ▁
+wandb:               eval/hans-lexical_overlap-entailment_runtime ▁
+wandb:    eval/hans-lexical_overlap-entailment_samples_per_second ▁
+wandb:      eval/hans-lexical_overlap-entailment_steps_per_second ▁
+wandb:                                          eval/rte_accuracy ▁
+wandb:                                              eval/rte_loss ▁
+wandb:                                           eval/rte_runtime ▁
+wandb:                                eval/rte_samples_per_second ▁
+wandb:                                  eval/rte_steps_per_second ▁
+wandb:                                                train/epoch ▁█████
+wandb:                                          train/global_step ▁█████
+wandb:                                        train/learning_rate ▁▁
+wandb:                                                 train/loss ▁█
+wandb:                                      train/total_grad_norm ▁▁
+wandb:                                           train/train_loss ▁
+wandb:                                        train/train_runtime ▁
+wandb:                             train/train_samples_per_second ▁
+wandb:                               train/train_steps_per_second ▁
+wandb:
+wandb: Run summary:
+wandb:           eval/hans-lexical_overlap-contradiction_accuracy 0.0006
+wandb:               eval/hans-lexical_overlap-contradiction_loss 0.91162
+wandb:            eval/hans-lexical_overlap-contradiction_runtime 25.7613
+wandb: eval/hans-lexical_overlap-contradiction_samples_per_second 194.089
+wandb:   eval/hans-lexical_overlap-contradiction_steps_per_second 19.409
+wandb:              eval/hans-lexical_overlap-entailment_accuracy 0.9994
+wandb:                  eval/hans-lexical_overlap-entailment_loss 0.52002
+wandb:               eval/hans-lexical_overlap-entailment_runtime 26.2597
+wandb:    eval/hans-lexical_overlap-entailment_samples_per_second 190.406
+wandb:      eval/hans-lexical_overlap-entailment_steps_per_second 19.041
+wandb:                                          eval/rte_accuracy 0.52708
+wandb:                                              eval/rte_loss 0.72461
+wandb:                                           eval/rte_runtime 1.395
+wandb:                                eval/rte_samples_per_second 198.563
+wandb:                                  eval/rte_steps_per_second 20.071
+wandb:                                                train/epoch 1.0
+wandb:                                          train/global_step 2
+wandb:                                        train/learning_rate 0
+wandb:                                                 train/loss 0.7935
+wandb:                                      train/total_grad_norm 0.0
+wandb:                                           train/train_loss 0.78296
+wandb:                                        train/train_runtime 55.0251
+wandb:                             train/train_samples_per_second 1.163
+wandb:                               train/train_steps_per_second 0.036
+wandb:

@@ -33,6 +33,10 @@ mkdir -p $TORCH_EXTENSIONS_DIR
 # set path to python
 # export PYTHON_BIN="/home/mmosbach/miniconda3/envs/llmft/bin"
 
+export PROJECT_DIR="/llmft"
+echo "PROJECT_DIR:"
+echo $PROJECT_DIR
+
 # rename GPUs
 source $PROJECT_DIR/scripts/misc/rename_gpu_ids.sh
 

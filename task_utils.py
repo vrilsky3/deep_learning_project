@@ -134,6 +134,9 @@ def load_glue_datasets(data_args, model_args):
                 features)  # overwrite old features
             
         else:
+            print(f"data_args.task_name: {data_args.task_name}")
+            print(f"data_args.dataset_cache_dir: {data_args.dataset_cache_dir}")
+            print(f"model_args.use_auth_token: {model_args.use_auth_token}")
             # Downloading and loading a dataset from the hub.
             raw_datasets = load_dataset(
                 "glue",

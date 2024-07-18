@@ -1,0 +1,15 @@
+# buid docker image
+
+docker build -f ./docker/Dockerfile --build-arg USER_UID=1000 --build-arg USER_NAME=viktor -t llmft:22.12-py3 .
+# create docker container
+
+docker run -it --rm --gpus=all --pid=host --ipc=host --user viktor -v .:/llmft -v .\datasets:/datasets -v .\logfiles:/logfiles -v .\cache:/cache llmft:22.12-py3
+
+then inside container:
+
+export CUDA_VISIBLE_DEVICES=1
+
+pip install -U datasets
+
+./experiments/vanilla_ft/run.sh
+

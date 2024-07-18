@@ -11,15 +11,21 @@ learning_rate=$7
 model_name_or_path=$8
 port=$9
 
+echo $max_train_samples
+echo $bsz
+echo $num_gpus
+
 # we log at the end of every epoch
 logging_steps=$((max_train_samples / (bsz * num_gpus)))
 
+#            --num_gpus 1 \
+
 for seed in "0"
 do
-    for data_seed in "0" "1" "2" "3" "4" "5" "6" "7" "8" "9"
+    for data_seed in "0"
     do
         deepspeed \
-            --include localhost:0,1,2,3,4,5,6,7 \
+            --num_gpus 1 \
             --master_port $port \
             $PROJECT_DIR/ft.py \
             --wandb_project_name llmft-experiments \
