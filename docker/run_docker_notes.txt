@@ -3,7 +3,7 @@
 docker build -f ./docker/Dockerfile --build-arg USER_UID=1000 --build-arg USER_NAME=viktor -t llmft:22.12-py3 .
 # create docker container
 
-docker run -it --rm --gpus=all --pid=host --ipc=host --user viktor -v .:/llmft -v .\datasets:/datasets -v .\logfiles:/logfiles -v .\cache:/cache llmft:22.12-py3
+docker run -it --rm --gpus=all --pid=host --ipc=host --user viktor -v .:/llmft -v .\datasets:/datasets -v .\logfiles:/logfiles -v .\cache:/cache -p 2222:22  llmft:22.12-py3
 
 then inside container:
 

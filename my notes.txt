@@ -1,0 +1,39 @@
+1.3b / 350m showed good pbft res on rte
+
+ICL worked well in the OOD only for largest 30B model
+
+CD paper page 32: maybe try different number of the TOP-N log prob
+
+
+
+DOCKER:
+
+exposed ports: 
+docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" -a
+
+ip:
+docker inspect -f "{{ .NetworkSettings.IPAddress }}" bdf6703f3423
+
+bash exec root:
+exec -it --user root 44a336c5e628 /bin/bash
+
+SSH: 
+
+https://superuser.com/questions/912531/error-permission-denied-publickey-password
+
+nano /etc/ssh/sshd_config
+(and enable password login, root)
+
+nano /etc/ssh/ssh_config
+(and enable password login)
+
+
+/usr/sbin/sshd -D &
+
+
+test port avail:
+
+Test-NetConnection 172.17.0.2 -port 2222
+ssh root@172.17.0.2 -p 2222
+
+

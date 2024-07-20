@@ -64,6 +64,7 @@ require_version("datasets>=1.8.0",
 logger = logging.getLogger(__name__)
 
 print("Inside ft.py")
+print(f"sys.argv:{sys.argv}")
 
 def main():
     # See all possible arguments in src/transformers/training_args.py
