@@ -623,6 +623,11 @@ class OPTWithClassifier(OPTForSequenceClassification):
 class OPTWithLMClassifier(OPTForCausalLM):
     def __init__(self, config):
         super().__init__(config)
+        # TODO: Keep an original frozen facebook trained OPT, call it p0
+        # Q). How about we use the largest model? Although p0 suppose to be the same model (diff weights) as p_theta
+        #   We only use p0 for inference, frozen. The largest model will give the best preds to learn from.
+        #   In the paper seems like that what they did and used the 52B model)
+        #   For now, drop it, as we dont have the resources to run that. Maybe add this thought to the report.
 
     def _init_weights(self, module):
         super()._init_weights(module)
@@ -647,6 +652,15 @@ class OPTWithLMClassifier(OPTForCausalLM):
         output_hidden_states: Optional[bool] = None,
         return_dict: Optional[bool] = None,
     ) -> Union[Tuple, CausalLMOutputWithPast]:
+
+        # TODO:
+        # X is the original query (input_ids).
+        # Here we need an additional input which is X|C query to pass to p0.
+        # calculate p0(X|C)
+        #   Just like in ICL, first give examples from C and then add the query of X.
+        # calculate p_theta(X)
+        #   Just pass X to the model like usually.
+        # Compute KL divergence for the loss.
 
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (

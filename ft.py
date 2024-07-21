@@ -390,6 +390,9 @@ def main():
 
     max_seq_length = min(data_args.max_seq_length, tokenizer.model_max_length)
 
+    # TODO
+    # Given X and C, we need a query of X|C. Similar to ICL.
+    # (currently, X is one of examples, I think).
     def preprocess_function(examples):
         # Tokenize the texts
 
@@ -524,6 +527,12 @@ def main():
     # tokenize and encode datasets
     with training_args.main_process_first(desc="dataset map pre-processing"):
         if training_args.do_train:
+            # TODO: for CD, we need an altered version of the train_dataset.
+            #   When training CD, for each training sample X, we also require C,
+            #   which will be a group of examples that serves the context to distill on.
+            #   (p_theta(X) is the same example as before,
+            #   but p0(X|C) needs that additional "context examples")
+            #   The eval_dataset and predict_dataset do not change.
             train_dataset = train_dataset.map(
                 preprocess_function,
                 batched=True,
