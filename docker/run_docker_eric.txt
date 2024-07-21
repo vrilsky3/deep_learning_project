@@ -1,6 +1,9 @@
 
 # Docker run
-docker run -it --rm --gpus=all --pid=host --ipc=host --user ec2-user -v /home/ec2-user/deep_learning_project:/llmft -v /home/ec2-user/git/deep_leraning_project/data:/datasets -v /home/ec2-user/git/deep_leraning_project/log:/logfiles -v /home/ec2-user/git/deep_leraning_project/.cache:/cache llmft:22.08-py3
+docker run -it --rm --gpus=all --pid=host --ipc=host --user ec2-user -v /home/ec2-user/deep_learning_project:/llmft -v /home/ec2-user/deep_leraning_project/data:/datasets -v /home/ec2-user/deep_leraning_project/log:/logfiles -v /home/ec2-user/deep_leraning_project/.cache:/cache llmft:22.08-py3
+
+# Docker run (eric version)
+docker run -it --rm --gpus=all --pid=host --ipc=host --user ec2-user -v /home/ec2-user/deep_learning_project:/llmft -v /home/ec2-user/deep_leraning_project/data:/datasets -v /home/ec2-user/deep_leraning_project/log:/logfiles -v /home/ec2-user/deep_leraning_project/.cache:/cache llmft:eric
 
 
 
