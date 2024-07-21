@@ -10,6 +10,8 @@ source $PROJECT_DIR/scripts/misc/setup.sh
 export NCCL_DEBUG=INFO
 
 bash $PROJECT_DIR/scripts/in_context/mnli/run_minimal.sh rte 2 facebook/opt-125m 1 60000
+bash $PROJECT_DIR/scripts/in_context/mnli/run_minimal.sh rte 2 facebook/opt-350m 1 60000
+bash $PROJECT_DIR/scripts/in_context/mnli/run_minimal.sh rte 2 facebook/opt-1.3b 1 60000
 
 # bash $PROJECT_DIR/scripts/in_context/mnli/run_minimal.sh mnli 2 facebook/opt-30b 1 60000
 # bash $PROJECT_DIR/scripts/in_context/mnli/run_gpt3.sh mnli 2 facebook/opt-30b 1 60000
