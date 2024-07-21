@@ -1,6 +1,8 @@
 from options import DataTrainingArguments, WandbArguments, FtArguments
 from utils import create_dir
-from transformers.pytorch_utils import ALL_LAYERNORM_LAYERS, is_torch_less_than_1_11
+from transformers.pytorch_utils import ALL_LAYERNORM_LAYERS #, is_torch_less_than_1_11
+def is_torch_less_than_1_11():
+    return version.parse(torch.__version__) < version.parse("1.11")
 from transformers.trainer_pt_utils import (
     DistributedLengthGroupedSampler,
     DistributedSamplerWithLoop,
