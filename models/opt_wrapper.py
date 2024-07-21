@@ -619,15 +619,11 @@ class OPTWithClassifier(OPTForSequenceClassification):
             attentions=transformer_outputs.attentions,
         )
 
+import pickle
 
 class OPTWithLMClassifier(OPTForCausalLM):
     def __init__(self, config):
         super().__init__(config)
-        # TODO: Keep an original frozen facebook trained OPT, call it p0
-        # Q). How about we use the largest model? Although p0 suppose to be the same model (diff weights) as p_theta
-        #   We only use p0 for inference, frozen. The largest model will give the best preds to learn from.
-        #   In the paper seems like that what they did and used the 52B model)
-        #   For now, drop it, as we dont have the resources to run that. Maybe add this thought to the report.
 
     def _init_weights(self, module):
         super()._init_weights(module)
@@ -652,15 +648,6 @@ class OPTWithLMClassifier(OPTForCausalLM):
         output_hidden_states: Optional[bool] = None,
         return_dict: Optional[bool] = None,
     ) -> Union[Tuple, CausalLMOutputWithPast]:
-
-        # TODO:
-        # X is the original query (input_ids).
-        # Here we need an additional input which is X|C query to pass to p0.
-        # calculate p0(X|C)
-        #   Just like in ICL, first give examples from C and then add the query of X.
-        # calculate p_theta(X)
-        #   Just pass X to the model like usually.
-        # Compute KL divergence for the loss.
 
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (
@@ -741,3 +728,144 @@ class OPTWithLMClassifier(OPTForCausalLM):
         else:
             # do nothing
             print("**** Untying input and output embeddings ****")
+
+class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
+    def __init__(self, config):
+        super().__init__(config)
+
+    def receive_p0(self, p0):
+        # for some reason, when i tried to add it in the __init__, there would be an infinite recursion happening.
+        # no idea why its like that, tried to debug but this is the best I could do for now :S
+        self.p0 = p0
+        self.p0.model.eval()
+
+    def forward_modal_p_on_input_query(self,
+                                       input_ids,
+                                       attention_mask,
+                                       head_mask,
+                                       past_key_values,
+                                       inputs_embeds,
+                                       use_cache,
+                                       output_attentions,
+                                       output_hidden_states,
+                                       model_to_use: OPTForCausalLM
+                                       ):
+        # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
+        outputs = model_to_use.model.decoder(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            head_mask=head_mask,
+            past_key_values=past_key_values,
+            inputs_embeds=inputs_embeds,
+            use_cache=use_cache,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+        )
+
+        # logits.shape = (bsz, seq_len, vocab_size)
+        logits = model_to_use.lm_head(outputs[0])
+
+        # In the classification setting we only care about the last prediction
+        # Get the position of the last non-padding token
+        sequence_lengths = torch.ne(
+            input_ids, self.config.pad_token_id).sum(-1) - 1
+        logits = logits[torch.arange(
+            input_ids.shape[0], device=logits.device), sequence_lengths]
+
+        return logits, outputs
+
+    def forward(
+        self,
+        input_ids: torch.LongTensor = None,
+        attention_mask: Optional[torch.Tensor] = None,
+        head_mask: Optional[torch.Tensor] = None,
+        past_key_values: Optional[List[torch.FloatTensor]] = None,
+        inputs_embeds: Optional[torch.FloatTensor] = None,
+        labels: Optional[torch.LongTensor] = None,
+        use_cache: Optional[bool] = None,
+        output_attentions: Optional[bool] = None,
+        output_hidden_states: Optional[bool] = None,
+        return_dict: Optional[bool] = None,
+    ) -> Union[Tuple, CausalLMOutputWithPast]:
+
+        output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
+        output_hidden_states = (
+            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+        )
+        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+
+        IS_TRAINING = True
+
+        # calculate p_theta(X)
+        #   Just pass X to the model like usually.
+        logits, outputs = self.forward_modal_p_on_input_query(
+            input_ids,
+            attention_mask,
+            head_mask,
+            past_key_values,
+            inputs_embeds,
+            use_cache,
+            output_attentions,
+            output_hidden_states,
+            model_to_use=self
+        )
+
+        # loss calculation
+        loss = None
+        if IS_TRAINING:
+            # We need a different loss.
+
+            # we already have p_theta(X), which is logits.
+            p_theta_logits = logits
+
+            # calculate p0(X|C)
+            p0_logits, _ = self.forward_modal_p_on_input_query(
+                                input_ids,
+                                attention_mask,
+                                head_mask,
+                                past_key_values,
+                                inputs_embeds,
+                                use_cache,
+                                output_attentions,
+                                output_hidden_states,
+                                model_to_use=self.p0
+                                )
+
+            # tmp pickleing for dev the KL div
+            print("Pickeling")
+            with open('p_theta_logits.pickle', 'wb') as f:
+                # Pickle the 'data' dictionary using the highest protocol available.
+                pickle.dump(p_theta_logits, f, pickle.HIGHEST_PROTOCOL)
+            with open('p0_logits.pickle', 'wb') as f:
+                # Pickle the 'data' dictionary using the highest protocol available.
+                pickle.dump(p0_logits, f, pickle.HIGHEST_PROTOCOL)
+            exit()
+
+            # Compute KL divergence for the loss.
+
+
+        else:
+            # loss calculation is same as before.
+            if labels is not None:
+                logits = logits.contiguous()
+                # move labels to correct device to enable model parallelism
+                labels = labels.to(logits.device)
+                labels = labels.contiguous()
+
+                # Flatten the tokens
+                loss_fct = CrossEntropyLoss()
+                loss = loss_fct(
+                    logits.view(-1, self.config.vocab_size), labels.view(-1))
+
+        if not return_dict:
+            output = (logits,) + outputs[1:]
+            return (loss,) + output if loss is not None else output
+
+        print("reached: return CausalLMOutputWithPast")
+        return CausalLMOutputWithPast(
+            loss=loss,
+            logits=logits,
+            past_key_values=outputs.past_key_values,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
