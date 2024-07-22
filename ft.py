@@ -535,11 +535,25 @@ def main():
 
     # set all random seeds again (not sure if this is really needed)
     set_seed(training_args.seed)
-
+    
+    # This method is for context distillation and augmenting the dataset with additional context
+    def add_feature_cd(example, length=0, train_dataset=None, num_of_ctx_items=0):
+        context=[]
+        for zz in range(num_of_ctx_items):
+            jj=np.random.randint(length)
+            s1=train_dataset['sentence1'][jj]
+            s2=train_dataset['sentence2'][jj]
+            label=train_dataset['label'][jj]
+            #context.append([s1,s2,label]) <--some reason, integer label is giving me some error-->
+            context.append([s1,s2,str(label)])
+        example['context']=context
+        return example 
+    #----------------------------------
+        
     # tokenize and encode datasets
     with training_args.main_process_first(desc="dataset map pre-processing"):
         if training_args.do_train:
-            # TODO: for CD, we need an altered version of the train_dataset.
+            #   for CD, we need an altered version of the train_dataset.
             #   When training CD, for each training sample X, we also require C,
             #   which will be a group of examples that serves the context to distill on.
             #   (p_theta(X) is the same example as before,
@@ -552,6 +566,9 @@ def main():
                 load_from_cache_file=not data_args.overwrite_cache,
                 desc="Running tokenizer on training dataset",
             )
+            
+            train_dataset = train_dataset.map(add_feature_cd, fn_kwargs={'length':len(train_dataset), 'train_dataset':train_dataset, 'num_of_ctx_items': 3})
+
 
         if training_args.do_eval:
             eval_dataset = eval_dataset.map(
