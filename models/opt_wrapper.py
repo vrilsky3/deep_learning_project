@@ -732,10 +732,12 @@ class OPTWithLMClassifier(OPTForCausalLM):
 class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
     def __init__(self, config):
         super().__init__(config)
+        self.K = 10  # for KL div loss calculation
+        self.kl_div_loss = torch.nn.KLDivLoss(reduction="batchmean")
 
     def receive_p0(self, p0):
         # for some reason, when i tried to add it in the __init__, there would be an infinite recursion happening.
-        # no idea why its like that, tried to debug but this is the best I could do for now :S
+        # no idea why it's like that, tried to debug but this is the best I could do for now :S
         self.p0 = p0
         self.p0.model.eval()
 
@@ -774,6 +776,15 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
 
         return logits, outputs
 
+    def get_probs_of_top_k_tokens_by_p0_and_sum_rest(self, p_logits, top_k_tokens_by_p0):
+        # we are doing softmax first, because if we try to sum all the logits, we  overflow
+        p_prob = torch.softmax(p_logits, dim=1)
+        top_k_p_prob = p_prob.gather(dim=1, index=top_k_tokens_by_p0)
+        sum_rest_of_p_prob = p_prob.sum(dim=1) - top_k_p_prob.sum(dim=1)
+        p_theta_probs = torch.cat((top_k_p_prob, sum_rest_of_p_prob.view(sum_rest_of_p_prob.shape[0], 1)),
+                                  dim=1)
+        return p_theta_probs
+
     def forward(
         self,
         input_ids: torch.LongTensor = None,
@@ -786,6 +797,7 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
         output_attentions: Optional[bool] = None,
         output_hidden_states: Optional[bool] = None,
         return_dict: Optional[bool] = None,
+        x_given_context_c=None,  # X|C ! if None, we are not in training.
     ) -> Union[Tuple, CausalLMOutputWithPast]:
 
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
@@ -794,7 +806,6 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
         )
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
-        IS_TRAINING = True
 
         # calculate p_theta(X)
         #   Just pass X to the model like usually.
@@ -812,7 +823,8 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
 
         # loss calculation
         loss = None
-        if IS_TRAINING:
+        is_training = x_given_context_c is not None
+        if is_training:
             # We need a different loss.
 
             # we already have p_theta(X), which is logits.
@@ -820,7 +832,7 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
 
             # calculate p0(X|C)
             p0_logits, _ = self.forward_modal_p_on_input_query(
-                                input_ids,
+                                x_given_context_c,  # p0(X|C) instead of p_theta(X)
                                 attention_mask,
                                 head_mask,
                                 past_key_values,
@@ -831,18 +843,15 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
                                 model_to_use=self.p0
                                 )
 
-            # tmp pickleing for dev the KL div
-            print("Pickeling")
-            with open('p_theta_logits.pickle', 'wb') as f:
-                # Pickle the 'data' dictionary using the highest protocol available.
-                pickle.dump(p_theta_logits, f, pickle.HIGHEST_PROTOCOL)
-            with open('p0_logits.pickle', 'wb') as f:
-                # Pickle the 'data' dictionary using the highest protocol available.
-                pickle.dump(p0_logits, f, pickle.HIGHEST_PROTOCOL)
-            exit()
-
             # Compute KL divergence for the loss.
+            _, top_k_tokens_by_p0 = p0_logits.topk(self.K, dim=1)
 
+            p_0_probs = self.get_probs_of_top_k_tokens_by_p0_and_sum_rest(p0_logits, top_k_tokens_by_p0)
+            p_theta_probs = self.get_probs_of_top_k_tokens_by_p0_and_sum_rest(p_theta_logits, top_k_tokens_by_p0)
+
+            # KLDivLoss expects the (first) input to be log'd
+            p_theta_probs_logged = torch.log(p_theta_probs)
+            loss = self.kl_div_loss(p_theta_probs_logged, p_0_probs)
 
         else:
             # loss calculation is same as before.
