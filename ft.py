@@ -579,7 +579,7 @@ def main():
             prompt += "Question:\n"
             prompt += f"Sentence1: {examples['sentence1'][idx]}\n"
             prompt += f"Sentence2: {examples['sentence2'][idx]}\n"
-            prompt += f"Expected Answer: {examples['label'][idx]}"
+            prompt += "Answer: "
             
             prompts.append(prompt)
         
