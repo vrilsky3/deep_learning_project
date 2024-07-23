@@ -537,6 +537,7 @@ def main():
     set_seed(training_args.seed)
     
     # This method is for context distillation and augmenting the dataset with additional context
+    # This method is not required as I have merged this into create_prompt_batch
     def add_feature_cd(example, length=0, train_dataset=None, num_of_ctx_items=0):
         context=[]
         for zz in range(num_of_ctx_items):
@@ -549,6 +550,40 @@ def main():
         example['context']=context
         return example 
     #----------------------------------
+    
+    def create_prompt_batch(examples, train_dataset=None, num_of_ctx_examples=0):
+        prompts = []
+        length = len(train_dataset)
+        for idx in range(len(examples['sentence1'])):
+            prompt = """Task: Determine the relationship between the following two sentences. Answer 0 for 'entailment', 1 for 'contradiction'.\n\n"""
+            context_examples=[]
+            for zz in range(num_of_ctx_examples):
+                jj=np.random.randint(length)
+                s1=train_dataset['sentence1'][jj]
+                s2=train_dataset['sentence2'][jj]
+                label=train_dataset['label'][jj]
+                context_examples.append([s1,s2,str(label)])
+
+            # Add context examples
+            if num_of_ctx_examples > 0:
+                prompt += f"Here are {num_of_ctx_examples} example{'s' if num_of_ctx_examples > 1 else ''} to help you:\n\n"
+            
+            for ctx_idx, (s1, s2, label) in enumerate(context_examples, 1):
+                prompt += f"Example {ctx_idx}:\n"
+                prompt += f"Sentence1: {s1}\n"
+                prompt += f"Sentence2: {s2}\n"
+                prompt += f"Answer: {int(label)}\n\n"
+            
+            # Add the actual question
+            prompt += "Now, please answer the following question:\n\n"
+            prompt += "Question:\n"
+            prompt += f"Sentence1: {examples['sentence1'][idx]}\n"
+            prompt += f"Sentence2: {examples['sentence2'][idx]}\n"
+            prompt += f"Expected Answer: {examples['label'][idx]}"
+            
+            prompts.append(prompt)
+        
+        return {"prompt": prompts}
         
     # tokenize and encode datasets
     with training_args.main_process_first(desc="dataset map pre-processing"):
@@ -567,7 +602,9 @@ def main():
                 desc="Running tokenizer on training dataset",
             )
             
-            train_dataset = train_dataset.map(add_feature_cd, fn_kwargs={'length':len(train_dataset), 'train_dataset':train_dataset, 'num_of_ctx_items': 3})
+            #train_dataset = train_dataset.map(add_feature_cd, fn_kwargs={'length':len(train_dataset), 'train_dataset':train_dataset, 'num_of_ctx_items': 3})
+            train_dataset = train_dataset.map(create_prompt_batch, batched=True, remove_columns=train_dataset.column_names,
+                                        fn_kwargs={'train_dataset':train_dataset, 'num_of_ctx_examples': 3})
 
 
         if training_args.do_eval:
