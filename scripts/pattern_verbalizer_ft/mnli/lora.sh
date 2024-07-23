@@ -28,10 +28,10 @@ logging_steps=$((max_train_samples / (bsz * num_gpus)))
 
 for seed in "0"
 do
-    for data_seed in "0" "1" "2" "3" "4" "5" "6" "7" "8" "9"
+    for data_seed in "0"
     do
         deepspeed \
-            --include localhost:0,1,2,3,4,5,6,7 \
+            --num_gpus 1 \
             --master_port $port \
             $PROJECT_DIR/ft.py \
             --wandb_project_name llmft-experiments \
@@ -42,7 +42,7 @@ do
             --pattern "{text1} {text2} ?" \
             --target_tokens "ĠYes,ĠNo" \
             --dataset_cache_dir $HF_DATASETS_CACHE \
-            --max_seq_length 256 \
+            --max_seq_length 512 \
             --output_dir $OUTPUT_DIR \
             --overwrite_output_dir \
             --do_train \
@@ -61,7 +61,7 @@ do
             --weight_decay 0.0 \
             --do_eval \
             --evaluation_strategy epoch \
-            --per_device_eval_batch_size 10 \
+            --per_device_eval_batch_size 4 \
             --eval_on_hans \
             --save_strategy no \
             --fp16 \

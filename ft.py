@@ -536,22 +536,7 @@ def main():
     # set all random seeds again (not sure if this is really needed)
     set_seed(training_args.seed)
     
-    # This method is for context distillation and augmenting the dataset with additional context
-    # This method is not required as I have merged this into create_prompt_batch
-    def add_feature_cd(example, length=0, train_dataset=None, num_of_ctx_items=0):
-        context=[]
-        for zz in range(num_of_ctx_items):
-            jj=np.random.randint(length)
-            s1=train_dataset['sentence1'][jj]
-            s2=train_dataset['sentence2'][jj]
-            label=train_dataset['label'][jj]
-            #context.append([s1,s2,label]) <--some reason, integer label is giving me some error-->
-            context.append([s1,s2,str(label)])
-        example['context']=context
-        return example 
-    #----------------------------------
-    
-    def create_prompt_batch(examples, train_dataset=None, num_of_ctx_examples=0):
+    def create_prompt_batch(examples, train_dataset, num_of_ctx_examples):
         prompts = []
         length = len(train_dataset)
         for idx in range(len(examples['sentence1'])):
@@ -582,8 +567,24 @@ def main():
             prompt += "Answer: "
             
             prompts.append(prompt)
-        
-        return {"prompt": prompts}
+
+        args_for_tokenizer = (prompts,)
+        result = tokenizer(*args_for_tokenizer, padding=padding,
+                           max_length=max_seq_length, truncation=True)
+
+        # Get mask for soft prompt tokens
+        # TODO(mm): For GPT-J and GPT-NeoX we have a different tokenizer. Adjust accordingly
+        if "opt" in model_args.model_name_or_path:
+            # For OPT models, the first token is always the bos token </s>
+            # Which happens to be also the unk token we use to mark soft prompt tokens
+            # Hence, we have to be careful about which tokens to mask as part of the soft prompt
+            result["soft_prompt_mask"] = [[0 if (idx != tokenizer.unk_token_id or pos == 0) else 1 for pos, idx in enumerate(indices)]
+                                          for indices in result["input_ids"]]  # <unk> is the placeholder for prompt embeddings
+
+        examples['x_given_context_c'] = result['input_ids']
+        examples['x_given_context_c_attention_mask'] = result['attention_mask']
+
+        return examples
         
     # tokenize and encode datasets
     with training_args.main_process_first(desc="dataset map pre-processing"):
@@ -601,10 +602,10 @@ def main():
                 load_from_cache_file=not data_args.overwrite_cache,
                 desc="Running tokenizer on training dataset",
             )
-            
-            #train_dataset = train_dataset.map(add_feature_cd, fn_kwargs={'length':len(train_dataset), 'train_dataset':train_dataset, 'num_of_ctx_items': 3})
-            train_dataset = train_dataset.map(create_prompt_batch, batched=True, remove_columns=train_dataset.column_names,
-                                        fn_kwargs={'train_dataset':train_dataset, 'num_of_ctx_examples': 3})
+
+            # remove_columns=train_dataset.column_names,
+            train_dataset = train_dataset.map(create_prompt_batch, batched=True,
+                                        fn_kwargs={'train_dataset':train_dataset, 'num_of_ctx_examples': 2})
 
 
         if training_args.do_eval:

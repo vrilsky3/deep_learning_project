@@ -798,7 +798,15 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
         output_hidden_states: Optional[bool] = None,
         return_dict: Optional[bool] = None,
         x_given_context_c=None,  # X|C ! if None, we are not in training.
+        x_given_context_c_attention_mask=None,
     ) -> Union[Tuple, CausalLMOutputWithPast]:
+
+        # print(f"len input_ids: {len(input_ids[0])}")
+        # print(f"input_ids is : {input_ids[0]}")
+        # print(f"x_given_context_c is : {x_given_context_c[0]}")
+        # print(f"attention_mask is : {attention_mask[0]}")
+        # print(f"x_given_context_c_attention_mask is : {x_given_context_c_attention_mask[0]}")
+        # exit()
 
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (
@@ -825,6 +833,8 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
         loss = None
         is_training = x_given_context_c is not None
         if is_training:
+            if x_given_context_c_attention_mask[0][-1] != 0:
+                raise RuntimeError("The X|P prompt ran out of context!!!")
             # We need a different loss.
 
             # we already have p_theta(X), which is logits.
@@ -833,7 +843,7 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
             # calculate p0(X|C)
             p0_logits, _ = self.forward_modal_p_on_input_query(
                                 x_given_context_c,  # p0(X|C) instead of p_theta(X)
-                                attention_mask,
+                                x_given_context_c_attention_mask,
                                 head_mask,
                                 past_key_values,
                                 inputs_embeds,
@@ -853,6 +863,7 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
             p_theta_probs_logged = torch.log(p_theta_probs)
             loss = self.kl_div_loss(p_theta_probs_logged, p_0_probs)
 
+            # print(f"KLD loss: {loss}")
         else:
             # loss calculation is same as before.
             if labels is not None:
@@ -870,7 +881,6 @@ class OPTWithLMClassifierWithCD(OPTWithLMClassifier):
             output = (logits,) + outputs[1:]
             return (loss,) + output if loss is not None else output
 
-        print("reached: return CausalLMOutputWithPast")
         return CausalLMOutputWithPast(
             loss=loss,
             logits=logits,
