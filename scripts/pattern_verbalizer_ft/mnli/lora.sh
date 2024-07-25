@@ -13,6 +13,7 @@ adapter_type="lora"
 adapter_dim=$9
 lora_alpha=${10}
 port=${11}
+cd_examples=${12}
 
 # we log at the end of every epoch
 logging_steps=$((max_train_samples / (bsz * num_gpus)))
@@ -69,6 +70,7 @@ do
             --data_seed $data_seed \
             --deepspeed $PROJECT_DIR/deepspeed_configs/ds_config_zero3.json \
             --deepspeed_stage 3 \
+            --cd_examples $cd_examples \
             --report_to "none"
     done
 done

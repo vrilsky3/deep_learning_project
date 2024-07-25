@@ -603,9 +603,16 @@ def main():
                 desc="Running tokenizer on training dataset",
             )
 
+
+            num_of_ctx_examples =2
+            if hasattr(data_args, 'cd_examples'):
+                if data_args.cd_examples is not None:
+                    num_of_ctx_examples = data_args.cd_examples
+             
+
             # remove_columns=train_dataset.column_names,
             train_dataset = train_dataset.map(create_prompt_batch, batched=True,
-                                        fn_kwargs={'train_dataset':train_dataset, 'num_of_ctx_examples': 2})
+                                        fn_kwargs={'train_dataset':train_dataset, 'num_of_ctx_examples': num_of_ctx_examples})
 
 
         if training_args.do_eval:
