@@ -15,7 +15,7 @@ lora_alpha=${10}
 port=${11}
 cd_examples=${12}
 use_kld=${13}
-top_k=${14}
+top_K=${14}
 
 # we log at the end of every epoch
 logging_steps=$((max_train_samples / (bsz * num_gpus)))
