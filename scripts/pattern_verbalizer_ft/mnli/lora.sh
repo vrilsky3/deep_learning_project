@@ -14,6 +14,8 @@ adapter_dim=$9
 lora_alpha=${10}
 port=${11}
 cd_examples=${12}
+use_kld=${13}
+top_k=${14}
 
 # we log at the end of every epoch
 logging_steps=$((max_train_samples / (bsz * num_gpus)))
@@ -71,6 +73,8 @@ do
             --deepspeed $PROJECT_DIR/deepspeed_configs/ds_config_zero3.json \
             --deepspeed_stage 3 \
             --cd_examples $cd_examples \
+            --use_kld $use_kld \
+            --top_K $top_K \
             --report_to "none"
     done
 done

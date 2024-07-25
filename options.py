@@ -322,6 +322,24 @@ class ModelArguments:
             "help": "Will enable to load a pretrained model whose head dimensions are different."},
     )
 
+    use_kld: Optional[int] = field(
+        default=1,
+        metadata={
+            "help": (
+                "use KLD or not 0 for dont use, 1 for use KLD"
+            )
+        })
+
+
+    
+    top_K: Optional[int] = field(
+        default=10,
+        metadata={
+            "help": (
+                "Top_K for KL div loss calculation"
+            )
+        })
+
     def to_dict(self):
         """
         Serializes this instance while replace `Enum` by their values (for JSON serialization support). It obfuscates

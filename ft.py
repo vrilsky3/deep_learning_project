@@ -256,18 +256,24 @@ def main():
                 use_auth_token=True if model_args.use_auth_token else None,
                 ignore_mismatched_sizes=model_args.ignore_mismatched_sizes,
             )
-            print("called p0")
-            model = OPTWithLMClassifierWithCD.from_pretrained(
-                model_args.model_name_or_path,
-                from_tf=bool(".ckpt" in model_args.model_name_or_path),
-                config=config,
-                cache_dir=model_args.cache_dir,
-                revision=model_args.model_revision,
-                use_auth_token=True if model_args.use_auth_token else None,
-                ignore_mismatched_sizes=model_args.ignore_mismatched_sizes,
-            )
-            model.receive_p0(p0)
-            print("initizialzed OPTWithLMClassifierWithCD with p0")
+            if model_args.use_kld==1:
+
+                print("called p0")
+                model = OPTWithLMClassifierWithCD.from_pretrained(
+                    model_args.model_name_or_path,
+                    from_tf=bool(".ckpt" in model_args.model_name_or_path),
+                    config=config,
+                    cache_dir=model_args.cache_dir,
+                    revision=model_args.model_revision,
+                    use_auth_token=True if model_args.use_auth_token else None,
+                    ignore_mismatched_sizes=model_args.ignore_mismatched_sizes,
+                )
+                
+                model.K = model_args.top_K
+                model.receive_p0(p0)
+                print("initizialzed OPTWithLMClassifierWithCD with p0")
+            else:
+                model=p0
         else:
             model = OPTWithClassifier.from_pretrained(
                 model_args.model_name_or_path,
