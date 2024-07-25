@@ -176,6 +176,15 @@ class DataTrainingArguments:
     test_file: Optional[str] = field(default=None, metadata={
                                      "help": "A csv or a json file containing the test data."})
 
+    cd_examples: Optional[int] = field(
+        default=2,
+        metadata={
+            "help": (
+                "Number of context examples in X|C"
+            )
+        },
+    )
+
     # Arguments used to evaluate on additional datasets
 
     eval_on_hans: bool = field(
