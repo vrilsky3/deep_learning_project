@@ -247,7 +247,7 @@ def main():
 
     elif "facebook/opt" in model_args.model_name_or_path:
         if ft_args.target_tokens is not None:
-            p0 = OPTWithLMClassifier.from_pretrained(
+            model = OPTWithLMClassifier.from_pretrained(
                 model_args.model_name_or_path,
                 from_tf=bool(".ckpt" in model_args.model_name_or_path),
                 config=config,
@@ -257,7 +257,7 @@ def main():
                 ignore_mismatched_sizes=model_args.ignore_mismatched_sizes,
             )
             if model_args.use_kld==1:
-
+                p0 = model
                 print("called p0")
                 model = OPTWithLMClassifierWithCD.from_pretrained(
                     model_args.model_name_or_path,
@@ -272,8 +272,6 @@ def main():
                 model.K = model_args.top_K
                 model.receive_p0(p0)
                 print("initizialzed OPTWithLMClassifierWithCD with p0")
-            else:
-                model=p0
         else:
             model = OPTWithClassifier.from_pretrained(
                 model_args.model_name_or_path,
