@@ -19,6 +19,19 @@
 \def\cvprPaperID{****} % *** Enter the CVPR Paper ID here
 \def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
 
+% Define a new environment for text boxes
+\newenvironment{itextbox}[1]
+{\par\begin{center}
+\begin{tabular}{|p{0.45\textwidth}|}
+\hline
+\textbf{#1} \\
+\hline
+\itshape\ignorespaces
+}
+{\\\hline
+\end{tabular}
+\end{center}\par}
+
 % Pages are numbered in submission mode, and unnumbered in camera-ready
 \ifcvprfinal\pagestyle{empty}\fi
 \begin{document}
@@ -52,22 +65,24 @@ Georgia Institute of Technology\\
 %\thispagestyle{empty}
 
 %%%%%%%%% ABSTRACT
-\begin{abstract}
-   The ABSTRACT To be written
-\end{abstract}
+%\begin{abstract}
+%   The ABSTRACT To be written
+%\end{abstract}
 
 %%%%%%%%% BODY TEXT
 \section{Introduction/Background/Motivation}
 %subsection{Motivation}
 In recent years, LLM(Large Language Models) applications drew people’s attention as they have demonstrated astonishing conversational interactive experiences. Questions from the public soon follow on the capabilities of LLM, and the extent of the technology’s potential. Interestingly, many tasks that LLMs struggle with point to the same challenge, which is the limited context window. As existing language models are generally implemented with transformers, they require memory and computation resources that increase quadratically in sequence length which puts a limit on the context length. In this article, we look into this limited context window problem or similarly, how to learn from examples more efficiently, and experiment with both fine-tuning and in-context learning methods that aim at alleviating it, increasing both in-domain and out-of-domain accuracy on RTE dataset.
 
-There are multiple investigated approaches to improve the context window limit. The first approach involves architectural changes that develops and trains models with longer context length from scratch. The other type, while keeping the architecture and pre-trained model intact, leverages the idea of adaptation and adapts the LLMs to tasks requiring longer context length. The classic adaptation methodologies, fine-tuning and in-context learning falls under this category.
+There are multiple investigated approaches to improve the context window limit. The first approach involves architectural changes that develops and trains models with longer context length from scratch. The other type, while keeping the architecture and pre-trained model intact, leverages the idea of adaptation and adapts the LLMs to tasks that are under a unique context. The classic adaptation methodologies of fine-tuning and in-context learning falls under this latter category. 
 
-There are many real-life and business use cases that could benefit from a long context window.
-For example, When Google tested its Gemini 1.5 which was released February 2024, they dropped an entire codebase and asked Gemini to write documentation for it. They also showed a 45-minute movie to Gemini and asked questions about the movie. To add on to that, use cases can be reading homeworks from current and all history class sessions to locate possible plagiarisation, to read detailed customer service chat history and chat instructions to tune a customer service chatbot, to monitor the videos online, etc. Theoretically, anything that exceeds the standard context window, which is around 124k tokens for GPT-4 and LLMs alike, compiled PDF files, details instructions, movies or videos longer than 5 minutes (videos are pre-processed into frames and each frame count as 128 tokens roughly) would be challenging for current LLMs. And It will be more challenging if more than one type of data is provided, for example, have LLMs to watch a 2 hour movie and write reviews or press articles about the movie. The actual use cases have no limit.
+In ICL, we adapt a model to a task by conditioning it on a sequence of demonstrations. A demonstration typically refers to an input x accompanied by its ground-truth label y, both of which often are converted to a specific pattern format. ICL thus feeds the model a sequence of such demonstrations, followed by the test input. The language model is then expected to predict the label of this final data point.
 
-We use RTE(Recongnizing Textual Entailment) dataset in this experimentation. The RTE datasets come from a series of textual entailment challenges. It started with “an inference test suite for evaluating the inferential competence of different NLP systems and semantic theories” called FraCas which is created manually by many linguists and funded by FP3-LRE. Later, Pascal RTE challenges, sharing a similar goal as FraCas, starts this RTE generic evaluation framework that evaluates models for distinct, real-world downstream tasks so datasets were extracted from downstream tasks through a process referred to as recasting (Glickman, 2006). This framework has impacted the community hugely and has been evolving since. The dataset we use is a combined dataset from RTE1, RTE2, RTE3 and RTE5. Examples are constructed from news and wikipedia text.
+Pattern-based fine-tuning (PBFT) is a recently proposed FT approach that uses the pretrained language modeling head instead of a randomly initialized classifier. Compared to vanilla FT, we have to specify an input pattern (to cast the task as a language modeling problem) and define a verbalizer (which maps tokens in the pre-trained model’s vocabulary to labels; Schick et al., 2020). For example, a NLI pattern might look as follows: {premise} Question:{hypothesis} Yes or No?,and the verbalizer will use Yes and No as tokens. Given these inputs and targets, model parameters are fine-tuned as usual. This method has been shown to be efficient for few-shot learning despite having no advantage over vanilla FT when the number of examples is large.
+Recent work has argued that ICL leads to better out-of-domain performance, when compared to FT (Si et al., 2023; Awadalla et al., 2022). LLMFT paper show that this often does not hold, proving the potential in non ICL context-aware inference. 
+There are many real-life and business use cases that could benefit from a long context window. For example, When Google tested its Gemini 1.5 which was released February 2024, they dropped an entire codebase and asked Gemini to write documentation for it. They also showed a 45-minute movie to Gemini and asked questions about the movie. To add on to that, use cases can be reading homeworks from current and all history class sessions to locate possible plagiarisation, to read detailed customer service chat history and chat instructions to tune a customer service chatbot, to monitor the videos online, etc. Theoretically, anything that exceeds the standard context window, which is around 124k tokens for GPT-4 and LLMs alike, compiled PDF files, details instructions, movies or videos longer than 5 minutes (videos are pre-processed into frames and each frame count as 128 tokens roughly) would be challenging for current LLMs. And It will be more challenging if more than one type of data is provided, for example, have LLMs to watch a 2 hour movie and write reviews or press articles about the movie. The actual use cases have no limit.
 
+We use RTE (Recognizing Textual Entailment) dataset in this experimentation. The RTE datasets come from a series of textual entailment challenges. It started with “an inference test suite for evaluating the inferential competence of different NLP systems and semantic theories” called FraCas which is created manually by many linguists and funded by FP3-LRE. Later, Pascal RTE challenges, sharing a similar goal as FraCas, starts this RTE generic evaluation framework that evaluates models for distinct, real-world downstream tasks so datasets were extracted from downstream tasks through a process referred to as recasting (Glickman, 2006). This framework has impacted the community hugely and has been evolving since. The dataset we use is a combined dataset from RTE1, RTE2, RTE3 and RTE5. Examples are constructed from news and wikipedia text. For out-of-domain evaluations, we use the HANS dataset which is an NLI evaluation set that tests specific hypotheses about invalid heuristics that NLI models are likely to learn.
 
 \begin{table*}
    \begin{center}
@@ -87,393 +102,166 @@ We use RTE(Recongnizing Textual Entailment) dataset in this experimentation. The
 %-------------------------------------------------------------------------
 %------------------------------------------------------------------------
 \section{Approach}
-
 The idea we propose in this project is to apply the context distillation fine-tuning of
-the natural language inference (NLI) classification task and compare it to the ICL approach. Given OPT’s fixed context size of 2048 tokens we are limited in the number of examples we can use at inference time, but the number of examples supplied are not limited during fine tuning. That is to say,  theoretically the limited context window problem can be solved by supplying those examples at the fine tuning stage. 
+the natural language inference (NLI) classification task and compare it to the ICL approach. Given OPT’s fixed context size of 2048 tokens we are limited in the number of examples we can use at inference time, but the number of examples supplied are not limited during fine tuning. That is to say,  theoretically the limited context window problem can be solved by fine-tuning on the context material.
 
-Now the problem becomes how to enable the  pre-trained model to learn more efficiently during fine training. We go with context distillation fine-tuning in this project and specifically look into the dynamics of KL Divergence Loss which was not discussed in the literature we went through. The details of the setup is disucssed in the experiment section.
+Now the problem becomes how to enable the pre-trained model to learn more efficiently during fine training. We have attempted to execute context distillation fine-tuning in this project and specifically look into the dynamics of KL Divergence Loss which was not discussed in the literature we went through. 
 
-We based our work on the llmft repo (https://github.com/uds-lsv/llmft) which was created along the Few-shot Fine-tuning vs. In-context Learning paper (Marius et al, 2023) 
-On top of that, we mainly update 
+We based our work on the llmft repo \url{https://github.com/uds-lsv/llmft} which was created along with the Few-shot Fine-tuning vs. In-context Learning paper (Marius et al, 2023). Our fork and code of the project is available here: \url{https://github.com/vrilsky3/deep_learning_project}.
 
-- part where the prompt are generated 
+\begin{itextbox}{sample prompt when num of ctx examples = 1}
+   \\
+   Task: Determine the relationship between the following two sentences. Answer 0 for 'entailment', 1 for 'contradiction'.
 
-- KL Divergence Loss calculation
+   Here are examples  to help you:
+   Example 1:
+   Sentence1: No Weapons of Mass Destruction Found in Iraq Yet.
+   Sentence2: Weapons of Mass Destruction Found in Iraq.
+   Answer:  1
+   
+   Now, please answer the following question: 
+   Question:
+   Sentence1: Mangla was summoned after Madhumita's sister Nidhi Shukla, who was the first witness in the case      
+   Sentence2: Shukla is related to Mangla.  \\        
+   Answer:
+\end{itextbox}
+
+\subparagraph*{Loss Function}
+
+We designed and implemented a new loss function in order to do context distillation learning with Kullback-Leibler (KL) divergence. The previous existing loss method was simply cross-entropy loss with the expected label. In our loss, we ignore the label. We use context examples ($C$) as specified in the previous dataset section to create a prompt that will represent $X\mid C$, a context enriched input. Then, we pass that to $P_0$, which is a frozen model that we use to generate predictions logits. Of course, at inference we will not have this context, but rather we want the model to learn this context. Therefore, for our model ($P_\theta$), we pass only $X$. Instead of cross-entropy loss, we have the KL divergence which measures distance between distributions (we perform softmax before passing them to the KLD component).
+The goal here is to learn not just what is the correct label (the most likely token by $P_0$), but also by using all tokens distribution, this can be see as a knowledge distillation scheme with $P_0$ being the teacher, and $P_0$ as the student. There are about 50k tokens, many of them irrelevant and therefore we only use top K of the tokens (and append the sum of the rest, in order to have the predictions sum to 1). \\
+The motivation driving this approach is to learn how to do predictions within a context C without being given C as part of your input.
+The idea is that $P_0$ is enriched by the context and provides good predictions given the context domain. 
+$P_\theta$ of course is oblivious to the context, it is only aware of the input $X$,
+and provides predictions that are oblivious to the context. Finally, optimizing for the KL divergence of the context-aware and context-blind predictions would (hopefully) adjust $P_\theta$’s predictions to take into account the context.
+
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.50\textwidth]{fig_1_loss_structure_comparison.png}
+   \caption{Loss Structure Comparison (left: previous loss, right: our KLD loss).}
+   \label{fig:your-label}
+\end{figure}
 
 
 
 \section{Experiments and Results}
-\subsection*{Experiments}
-We perform exploration on the dynamics of optimizing  KL Divergence loss, and compared ICL and FT approaches for task adaptation in NLI by their in-domain and out-of-domain performances. In the following paragraphs, we discuss our experiment setups in detail.
 
-Models 
+
+\subsection*{Experimentation goals}
+The main hypothesis we rely on is that the new loss method we devised will tune a model that will yield predictions that will improve the accuracy on both in-domain and out-of-domain data. The previous loss method is dependent on the input label, but our new approach only optimizes for the KL divergence of the prediction, which we assume will incorporate the context and thus produce the predictions we want. For this, we need to see that as the loss improves, the accuracy improves as well. 
+Furthermore, our method has some parameters we do not know the effect of. Namely the number of context examples that P0 is enriched with, and the number of top K tokens. For this, we compare loss and accuracy with different values.
+Lastly, we would like to compare our method to the previous loss fine tuning method. We will compare the accuracy of the resulting models both in-domain and out-of-domain.
+
+\subsection*{Experiments design and setup}
+We performed an exploration on the dynamics of optimizing  KL Divergence loss, and compared ICL and FT approaches for task adaptation in NLI by their in-domain and out-of-domain performances. In the following paragraphs, we discuss our experiment setups in detail.
+
+\subparagraph*{Models}
 All experiments were run using the same OPT model (Zhang et al., 2022) with 125 million parameters, thus our results can be compared directly without other factors at play. It was also a decision made due to limited computing resources.
+We used the 125 million parameter model for both $P_0$ and $P_\theta$. Note that $P_0$ is frozen (we only use it for inference),
+ and it may be any other model that uses the same vocabulary. Furthermore, since we train to fit for the predictions of $P_0$,
+  it is preferred that $P_0$ be the best model possible, which is often bigger.
+   In fact, in the paper that offered this method, they used the largest OPT model (52B).
+    Due to compute resource limitation, we used the same model size as $P_\theta$ (125M), which as we will present, ended up degrading our results.
+\subparagraph*{ICL setup}
+2 number of context examples are provided to ICL. We consider a prediction to be correct when the returned probability of the ground truth’s verbalizer is larger than the other verbalizer token.
 
-Loss Function
-
-Datasets 
-We converted the dataset to a specific format using a pattern and a verbalizer, and the same data is used for both ICL testing and PBFT training. For verbalizer we used 0 and 1, which can be mapped to entailment and not entailment. An example of the prompt is provided in figure.
-
-Task: Determine the relationship between the following two sentences. Answer 0 for 'entailment', 1 for 'contradiction'.
-
-Here are examples  to help you:
-Example 1:
-Sentence1: No Weapons of Mass Destruction Found in Iraq Yet.
-Sentence2: Weapons of Mass Destruction Found in Iraq.
-Answer:  1
-
-Now, please answer the following question: 
-Question:
-Sentence1: Mangla was summoned after Madhumita's sister Nidhi Shukla, who was the first witness in the case      
-Sentence2: Shukla is related to Mangla.          
-Answer:
-
-sample prompt when num of ctx examples = 1
-
-ICL setup
-[?] number of context examples are provided to ICL. We consider a prediction to be correct when the returned probability of the ground truth’s verbalizer is larger than the other verbalizer token.
-
-FT setup 
+\subparagraph*{FT setup}
 We perform a few-shot PBFT with the simple pattern shown in the above datasets section where we expect the model to follow up with a 0 or 1 indicating the label for the test case. The number of context examples supplied are tested with different values, either 1 or 2 or 3 examples are provided. The pre-trained model is tuned with KL Divergence loss between the stored log-probabilities and the model-predicted probabilities. The number of log probabilities stored are also tested with different values, either top 5 or 10 or 50 tokens are preserved. LoRA is used as the PEFT technique to speed up the training process.
+\linebreak
+
+Only in a late stage of the project, we realized that our GPU memory resources are not able to load big models. As discussed, our entire method heavily relies on $P_0$ to both incorporate the context and provide useful logits to learn from.
+We planned to have $P_\theta$ a smaller model, but we absolutely needed $P_0$ to be the biggest model possible, as the context enriched prompt $X \mid P$ is long and much more complicated compared to the single question prompt X that $P_\theta$ is being fed. We still ran the experiments to see what kind of behavior we would see but we anticipated that the accuracy will be low as we are fitting for bad $P_0$ prediction (garbage in - garbage out). 
 
 
 \subsection*{Results}
-(10 points) How did you measure success? What experiments were used? What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why? Justify your reasons with arguments supported by evidence and data.
+We present the results from experimenting the dynamics of KL divergence loss in figure [2] and figure [3], and the in-domain and out-of-domain model performance in Figure [4], comparing both ICL and FT methods.
 
-\textbf{Important: This section should be rigorous and thorough. Present detailed information about decision you made, why you made them, and any evidence/experimentation to back them up. This is especially true if you leveraged existing architectures, pre-trained models, and code (i.e. do not just show results of fine-tuning a pre-trained model without any analysis, claims/evidence, and conclusions, as that tends to not make a strong project). }
+\subparagraph*{How much OOD data is needed?}
+Before experiments, we expect to see the performance getting better when a larger number of context examples are provided. The experiment actually shows that the number of context examples provided relates to the performance at the initial epochs, the difference between the initial performance starts to diminish when the fine tuning process goes further. This proves that our experiments do bring $P_\theta(X)$ close to $P_0(X|C)$.
 
-%-------------------------------------------------------------------------
-\section{Other Sections}
+\subparagraph*{How many tokens are needed in KL divergence loss?}
+Before experiments, we expect to see similar performance between the number of tokens as the probabilities of tokens is a skewed distribution where the top couple tokens account for the majority of possiblities. The experiment does confirm our expectations with some caveats covered in the next couple paragraphs.
 
-\begin{table*}
-\begin{center}
-\begin{tabular}{|l|c|p{8cm}|}
-\hline
-Student Name & Contributed Aspects & Details \\
-\hline\hline
-Team Member 1 & Data Creation and Implementation & Scraped the dataset for this project and trained the CNN of the encoder. Implemented attention mechanism to improve results. \\
-Team Member 2 & Implementation and Analysis & Trained the LSTM of the encoder and analyzed the results. Analyzed effect of number of nodes in hidden state.  Implemented Convolutional LSTM. \\
-\hline
-\end{tabular}
-\end{center}
-\caption{Contributions of team members.}
-\label{tab:contributions}
-\end{table*}
-
-
-
-You are welcome to introduce additional sections or subsections, if required, to address the following questions in detail. 
-
-(5 points) Appropriate use of figures / tables / visualizations. Are the ideas presented with appropriate illustration? Are the results presented clearly; are the important differences illustrated? 
-
-(5 points) Overall clarity. Is the manuscript self-contained? Can a peer who has also taken Deep Learning understand all of the points addressed above? Is sufficient detail provided? 
-
-(5 points) Finally, points will be distributed based on your understanding of how your project relates to Deep Learning. Here are some questions to think about: 
-
-What was the structure of your problem? How did the structure of your model reflect the structure of your problem? 
-
-What parts of your model had learned parameters (e.g., convolution layers) and what parts did not (e.g., post-processing classifier probabilities into decisions)? 
-
-What representations of input and output did the neural network expect? How was the data pre/post-processed?
-What was the loss function? 
-
-Did the model overfit? How well did the approach generalize? 
-
-What hyperparameters did the model have? How were they chosen? How did they affect performance? What optimizer was used? 
-
-What Deep Learning framework did you use? 
-
-What existing code or models did you start with and what did those starting points provide? 
-
-Briefly discuss potential future work that the research community could focus on to make improvements in the direction of your project's topic.
-
-
-%-------------------------------------------------------------------------
-
-\section{Work Division}
-
-Please add a section on the delegation of work among team members at the end of the report, in the form of a table and paragraph description. This and references do \textbf{NOT} count towards your page limit. An example has been provided in Table \ref{tab:contributions}.
-
-\newpage
-\newpage
-\section{Miscellaneous Information}
-
-The rest of the information in this format template has been adapted from CVPR 2020 and provides guidelines on the lower-level specifications regarding the paper's format.
-
-\subsection{Language}
-
-All manuscripts must be in English.
-
-
-\subsection{Paper length}
-Papers, excluding the references section,
-must be no longer than six pages in length. The references section
-will not be included in the page count, and there is no limit on the
-length of the references section. For example, a paper of six pages
-with two pages of references would have a total length of 8 pages.
-
-%-------------------------------------------------------------------------
-\subsection{The ruler}
-The \LaTeX\ style defines a printed ruler which should be present in the
-version submitted for review.  The ruler is provided in order that
-reviewers may comment on particular lines in the paper without
-circumlocution.  If you are preparing a document using a non-\LaTeX\
-document preparation system, please arrange for an equivalent ruler to
-appear on the final output pages.  The presence or absence of the ruler
-should not change the appearance of any other content on the page.  The
-camera ready copy should not contain a ruler. (\LaTeX\ users may uncomment
-the \verb'\cvprfinalcopy' command in the document preamble.)  Reviewers:
-note that the ruler measurements do not align well with lines in the paper
---- this turns out to be very difficult to do well when the paper contains
-many figures and equations, and, when done, looks ugly.  Just use fractional
-references (e.g.\ this line is $095.5$), although in most cases one would
-expect that the approximate location will be adequate.
-
-\subsection{Mathematics}
-
-Please number all of your sections and displayed equations.  It is
-important for readers to be able to refer to any particular equation.  Just
-because you didn't refer to it in the text doesn't mean some future reader
-might not need to refer to it.  It is cumbersome to have to use
-circumlocutions like ``the equation second from the top of page 3 column
-1''.  (Note that the ruler will not be present in the final copy, so is not
-an alternative to equation numbers).  All authors will benefit from reading
-Mermin's description of how to write mathematics:
-\url{http://www.pamitc.org/documents/mermin.pdf}.
-
-Finally, you may feel you need to tell the reader that more details can be
-found elsewhere, and refer them to a technical report.  For conference
-submissions, the paper must stand on its own, and not {\em require} the
-reviewer to go to a techreport for further details.  Thus, you may say in
-the body of the paper ``further details may be found
-in~\cite{Authors14b}''.  Then submit the techreport as additional material.
-Again, you may not assume the reviewers will read this material.
-
-Sometimes your paper is about a problem which you tested using a tool which
-is widely known to be restricted to a single institution.  For example,
-let's say it's 1969, you have solved a key problem on the Apollo lander,
-and you believe that the CVPR70 audience would like to hear about your
-solution.  The work is a development of your celebrated 1968 paper entitled
-``Zero-g frobnication: How being the only people in the world with access to
-the Apollo lander source code makes us a wow at parties'', by Zeus \etal.
-
-You can handle this paper like any other.  Don't write ``We show how to
-improve our previous work [Anonymous, 1968].  This time we tested the
-algorithm on a lunar lander [name of lander removed for blind review]''.
-That would be silly, and would immediately identify the authors. Instead
-write the following:
-\begin{quotation}
-\noindent
-   We describe a system for zero-g frobnication.  This
-   system is new because it handles the following cases:
-   A, B.  Previous systems [Zeus et al. 1968] didn't
-   handle case B properly.  Ours handles it by including
-   a foo term in the bar integral.
-
-   ...
-
-   The proposed system was integrated with the Apollo
-   lunar lander, and went all the way to the moon, don't
-   you know.  It displayed the following behaviours
-   which show how well we solved cases A and B: ...
-\end{quotation}
-As you can see, the above text follows standard scientific convention,
-reads better than the first version, and does not explicitly name you as
-the authors.  A reviewer might think it likely that the new paper was
-written by Zeus \etal, but cannot make any decision based on that guess.
-He or she would have to be sure that no other authors could have been
-contracted to solve problem B.
-\medskip
-
-\noindent
-FAQ\medskip\\
-{\bf Q:} Are acknowledgements OK?\\
-{\bf A:} No.  Leave them for the final copy.\medskip\\
-{\bf Q:} How do I cite my results reported in open challenges?
-{\bf A:} To conform with the double blind review policy, you can report results of other challenge participants together with your results in your paper. For your results, however, you should not identify yourself and should not mention your participation in the challenge. Instead present your results referring to the method proposed in your paper and draw conclusions based on the experimental comparison to other results.\medskip\\
-
-\begin{figure}[t]
-\begin{center}
-\fbox{\rule{0pt}{2in} \rule{0.9\linewidth}{0pt}}
-   %\includegraphics[width=0.8\linewidth]{egfigure.eps}
-\end{center}
-   \caption{Example of caption.  It is set in Roman so that mathematics
-   (always set in Roman: $B \sin A = A \sin B$) may be included without an
-   ugly clash.}
-\label{fig:long}
-\label{fig:onecol}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.50\textwidth]{Fig1_comparing number of context examples.png}
+   \caption{PBFT when different number of context examples provided}
+   \label{fig:your-label}
 \end{figure}
 
-\subsection{Miscellaneous}
-
-\noindent
-Compare the following:\\
-\begin{tabular}{ll}
- \verb'$conf_a$' &  $conf_a$ \\
- \verb'$\mathit{conf}_a$' & $\mathit{conf}_a$
-\end{tabular}\\
-See The \TeX book, p165.
-
-The space after \eg, meaning ``for example'', should not be a
-sentence-ending space. So \eg is correct, {\em e.g.} is not.  The provided
-\verb'\eg' macro takes care of this.
-
-When citing a multi-author paper, you may save space by using ``et alia'',
-shortened to ``\etal'' (not ``{\em et.\ al.}'' as ``{\em et}'' is a complete word.)
-However, use it only when there are three or more authors.  Thus, the
-following is correct: ``
-   Frobnication has been trendy lately.
-   It was introduced by Alpher~\cite{Alpher02}, and subsequently developed by
-   Alpher and Fotheringham-Smythe~\cite{Alpher03}, and Alpher \etal~\cite{Alpher04}.''
-
-This is incorrect: ``... subsequently developed by Alpher \etal~\cite{Alpher03} ...''
-because reference~\cite{Alpher03} has just two authors.  If you use the
-\verb'\etal' macro provided, then you need not worry about double periods
-when used at the end of a sentence as in Alpher \etal.
-
-For this citation style, keep multiple citations in numerical (not
-chronological) order, so prefer \cite{Alpher03,Alpher02,Authors14} to
-\cite{Alpher02,Alpher03,Authors14}.
 
 
-\begin{figure*}
-\begin{center}
-\fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
-\end{center}
-   \caption{Example of a short caption, which should be centered.}
-\label{fig:short}
-\end{figure*}
 
-%------------------------------------------------------------------------
-\subsection{Formatting your paper}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.50\textwidth]{Fig2_comparing topk.png}
+   \caption{PBFT when different number of context examples provided}
+   \label{fig:your-label}
+\end{figure}
 
-All text must be in a two-column format. The total allowable width of the
-text area is $6\frac78$ inches (17.5 cm) wide by $8\frac78$ inches (22.54
-cm) high. Columns are to be $3\frac14$ inches (8.25 cm) wide, with a
-$\frac{5}{16}$ inch (0.8 cm) space between them. The main title (on the
-first page) should begin 1.0 inch (2.54 cm) from the top edge of the
-page. The second and following pages should begin 1.0 inch (2.54 cm) from
-the top edge. On all pages, the bottom margin should be 1-1/8 inches (2.86
-cm) from the bottom edge of the page for $8.5 \times 11$-inch paper; for A4
-paper, approximately 1-5/8 inches (4.13 cm) from the bottom edge of the
-page.
+
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.50\textwidth]{Fig4_CE_KLD_comparing_id_ood.png}
+   \caption{in-domain and out-of-domain accuracy between PBFT with DL divergence loss and CE loss}
+   \label{fig:your-label}
+\end{figure}
+
 
 %-------------------------------------------------------------------------
-\subsection{Margins and page numbering}
+\section{Discussion, conclusions, and future work}
+\subsection*{Discussion}
+The result showed the in-domain performance closer to 0 and some but definitely underperforming out-of-domain performance. We looked further into the predictions and it turns out the model did not limit its answers to only 0 or 1 the whole time. When we look further into the loss calculation, we realize the part predicting P0 was the issue. Thought the KL divergence loss helps approximating $P_\theta(X)$ to $P_0(X\mid C)$. The $_0(X\mid C)$ was not a meaningful prediction initially.
+We investigated our experimentation setup and codes, and concluded several possibilities.
+\subparagraph*{Small model size}
+We’ve experimented with the opt model with 125 million parameters only due to limited resources. In the llmft paper, the experimentation was performed on much larger pre-trained models.
+unbalanced examples 
+We later realize that the examples we provide during fine tuning were not balanced. For example, when we supply 3 examples, the number of positive and negative examples can not be equal. and especially when we only supply 1 example, the pre-trained model was only shown 1 positive or negative example. 
+KL divergence loss setup
 
-All printed material, including text, illustrations, and charts, must be kept
-within a print area 6-7/8 inches (17.5 cm) wide by 8-7/8 inches (22.54 cm)
-high.
+In the experiments, we set up the KL divergence loss to select the top K tokens. After experiments, we realize the possibility that the expected outcome, 0 or 1, may not exist in the top K tokens initially. Taking it further, if we were never interested in tokens other than 0 or 1, it’s better and more straight-forward if we only select token 0 and 1 in the KL divergence loss setup.
+
+\subparagraph*{Conclusions}
+In summary, our experiments shows that  optimizing KL divergen loss with p0(X|C) is helpful, but due to the P0(X|C) part has some issues, we were not able to get some meaningful accuracy numbers that can be compared to the ICL approach.
+
+\subparagraph*{Future work}
+1. Experiment with larger model sizes: Use larger pre-trained models for P0 to potentially improve the quality of the context enriched predictions\\
+2. Investigate hybrid loss functions: Experiment with combinations of KL divergence loss and cross-entropy loss.\\
+3. Analyze context window size impact: Conduct experiments with varying context window sizes to determine the optimal length for different tasks and model sizes.
+
 
 
 
 %-------------------------------------------------------------------------
-\subsection{Type-style and fonts}
+\newpage
+\newpage
+\section{Work Division}
 
-Wherever Times is specified, Times Roman may also be used. If neither is
-available on your word processor, please use the font closest in
-appearance to Times to which you have access.
+\begin{table*}
+   \begin{center}
+   \begin{tabular}{|c|p{4cm}|p{8cm}|}
+   \hline
+   Name & Contributed Aspects & Details \\
+   \hline
+   \hline
+   Rilsky Viktor & Research. Design and implementation of the loss method. & Wrote the proposal and planned the scope of the project. Planned how we will implement the context distillation. Implemented the KLD loss. Initiating and flow of $P_0$ and $P_\theta$ models. Reading the original repo and planning where we should implement things and how. Coordinated with team members and organized tasks for everyone. \\
+   \hline
+   Pandurangan Suriyanarayna G & Implementation of the context prompting. Debugging. Supported the running of the experiments. &   Implemented the augmented dataset that draws enriches a sample with other samples as context. Helped for many long hours to pair-debugging many issues we encountered, both in implementation and experiments. Also added quality of life additions to the script so experiments are more organized. Suriyanarayna was involved in all parts of the code implementation and many things ran smoothly thanks to his efforts. \\
+   \hline
+   Lu Shuyan & Research, experiment design, experiment analysis.  & Did wide yet deep research and reading about the field and other solutions made to address the issue. Gave valuable perspectives on the scope and focus we should encompass. Designed the metrics and how we will evaluate our method. Examined the various solutions to the problem and compared how theoretically our proposition comes into play. Analyzed the experiment's results and concluded multiple points where we should have done things better. Lucy is a sharp scientist that led multiple discussions where she navigated and set the project goals. \\
+   \hline
+   Kim Hoyeob  & Implementation of the context prompting. Running the experiments. & Implemented the creation of the prompt $X \mid C$. Debugged many practical runtime issues and was successful in executing our scripts on remote cloud hardware. Collected the experiments in an organized manner. For hyperparameter tuning, ran the model dozens of times. Created graphs to visualize results. Prepared report formats and conducted reviews. Kim was a valuable member with high participation and was involved in coding, data analysis, visualization, and discussion of the results.
 
-MAIN TITLE. Center the title 1-3/8 inches (3.49 cm) from the top edge of
-the first page. The title should be in Times 14-point, boldface type.
-Capitalize the first letter of nouns, pronouns, verbs, adjectives, and
-adverbs; do not capitalize articles, coordinate conjunctions, or
-prepositions (unless the title begins with such a word). Leave two blank
-lines after the title.
+   \\
+   \hline
+   \end{tabular}
+   \end{center}
+   \caption{Contributions of team members.}
+   \label{tab:contributions}
+   \end{table*}
 
-AUTHOR NAME(s) and AFFILIATION(s) are to be centered beneath the title
-and printed in Times 12-point, non-boldface type. This information is to
-be followed by two blank lines.
-
-The ABSTRACT and MAIN TEXT are to be in a two-column format.
-
-MAIN TEXT. Type main text in 10-point Times, single-spaced. Do NOT use
-double-spacing. All paragraphs should be indented 1 pica (approx. 1/6
-inch or 0.422 cm). Make sure your text is fully justified---that is,
-flush left and flush right. Please do not place any additional blank
-lines between paragraphs.
-
-Figure and table captions should be 9-point Roman type as in
-Figures~\ref{fig:onecol} and~\ref{fig:short}.  Short captions should be centred.
-
-\noindent Callouts should be 9-point Helvetica, non-boldface type.
-Initially capitalize only the first word of section titles and first-,
-second-, and third-order headings.
-
-FIRST-ORDER HEADINGS. (For example, {\large \bf 1. Introduction})
-should be Times 12-point boldface, initially capitalized, flush left,
-with one blank line before, and one blank line after.
-
-SECOND-ORDER HEADINGS. (For example, { \bf 1.1. Database elements})
-should be Times 11-point boldface, initially capitalized, flush left,
-with one blank line before, and one after. If you require a third-order
-heading (we discourage it), use 10-point Times, boldface, initially
-capitalized, flush left, preceded by one blank line, followed by a period
-and your text on the same line.
-
-%-------------------------------------------------------------------------
-\subsection{Footnotes}
-
-Please use footnotes\footnote {This is what a footnote looks like.  It
-often distracts the reader from the main flow of the argument.} sparingly.
-Indeed, try to avoid footnotes altogether and include necessary peripheral
-observations in
-the text (within parentheses, if you prefer, as in this sentence).  If you
-wish to use a footnote, place it at the bottom of the column on the page on
-which it is referenced. Use Times 8-point type, single-spaced.
-
-
-%-------------------------------------------------------------------------
-\subsection{References}
-
-List and number all bibliographical references in 9-point Times,
-single-spaced, at the end of your paper. When referenced in the text,
-enclose the citation number in square brackets, for
-example~\cite{Authors14}.  Where appropriate, include the name(s) of
-editors of referenced books.
-
-\begin{table}
-\begin{center}
-\begin{tabular}{|l|c|}
-\hline
-Method & Frobnability \\
-\hline\hline
-Theirs & Frumpy \\
-Yours & Frobbly \\
-Ours & Makes one's heart Frob\\
-\hline
-\end{tabular}
-\end{center}
-\caption{Results.   Ours is better.}
-\end{table}
-
-%-------------------------------------------------------------------------
-\subsection{Illustrations, graphs, and photographs}
-
-All graphics should be centered.  Please ensure that any point you wish to
-make is resolvable in a printed copy of the paper.  Resize fonts in figures
-to match the font in the body text, and choose line widths which render
-effectively in print.  Many readers (and reviewers), even of an electronic
-copy, will choose to print your paper in order to read it.  You cannot
-insist that they do otherwise, and therefore must not assume that they can
-zoom in to see tiny details on a graphic.
-
-When placing figures in \LaTeX, it's almost always best to use
-\verb+\includegraphics+, and to specify the  figure width as a multiple of
-the line width as in the example below
-{\small\begin{verbatim}
-   \usepackage[dvips]{graphicx} ...
-   \includegraphics[width=0.8\linewidth]
-                   {myfile.eps}
-\end{verbatim}
-}
-
-
-%-------------------------------------------------------------------------
-\subsection{Color}
-
-Please refer to the author guidelines on the CVPR 2020 web page for a discussion
-of the use of color in your document.
 
 %------------------------------------------------------------------------
 

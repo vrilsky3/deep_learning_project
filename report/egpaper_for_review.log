@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.5.18)  29 JUL 2024 21:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.5.18)  30 JUL 2024 22:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/Users/hoyeob.kim/git/00_GT_course_workspace/02_deep_learning/teamproject/report/egpaper_for_review.tex
-(/Users/hoyeob.kim/git/00_GT_course_workspace/02_deep_learning/teamproject/report/egpaper_for_review.tex
+**/Users/hoyeob.kim/git/00_GT_course_workspace/02_deep_learning/teamproject/deep_learning_project/report/egpaper_for_review.tex
+(/Users/hoyeob.kim/git/00_GT_course_workspace/02_deep_learning/teamproject/deep_learning_project/report/egpaper_for_review.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -262,7 +262,7 @@ File: hpdftex.def 2024-01-20 v7.01h Hyperref driver for pdfTeX
 \c@bookmark@seq@number=\count290
 \Hy@SectionHShift=\skip55
 )
-LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 24.
+LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 37.
  (/usr/local/texlive/2024/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 ) (/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
@@ -271,29 +271,38 @@ File: l3backend-pdftex.def 2024-02-20 L3 backend support: PDF output (pdfTeX)
 \l__pdf_internal_box=\box55
 ) (./egpaper_for_review.aux
 
+LaTeX Warning: Label `fig:your-label' multiply defined.
+
+
+LaTeX Warning: Label `fig:your-label' multiply defined.
+
+
+LaTeX Warning: Label `fig:your-label' multiply defined.
+
+
 LaTeX Warning: Label `tab:contributions' multiply defined.
 
 )
 \openout1 = `egpaper_for_review.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 24.
-LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 37.
+LaTeX Font Info:    ... okay on input line 37.
  ABD: EveryShipout initializing macros (/usr/local/texlive/2024/texmf-dist/tex/latex/graphics/color.sty
 Package: color 2022/01/06 v1.3d Standard LaTeX Color (DPC)
  (/usr/local/texlive/2024/texmf-dist/tex/latex/graphics-cfg/color.cfg
@@ -319,66 +328,110 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
  (/usr/local/texlive/2024/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring ON on input line 24.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 53.
+Package hyperref Info: Link coloring ON on input line 37.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 66.
  (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 53.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 66.
  (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 53.
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 66.
  (/usr/local/texlive/2024/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-) [1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/base/8r.enc}
+)
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/base/8r.enc}
 
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 96--98
-[]\OT1/ptm/m/n/10 We based our work on the llmft repo
+Underfull \hbox (badness 3713) in paragraph at lines 110--111
+[]\OT1/ptm/m/n/10 We based our work on the llmft repo [][]$\OT1/pcr/m/n/10 https :
+ []
+
+<fig_1_loss_structure_comparison.png, id=15, 613.2pt x 377.337pt>
+File: fig_1_loss_structure_comparison.png Graphic file (type png)
+<use fig_1_loss_structure_comparison.png>
+Package pdftex.def Info: fig_1_loss_structure_comparison.png  used on input line 141.
+(pdftex.def)             Requested size: 248.42812pt x 152.87247pt.
+
+Overfull \hbox (11.29218pt too wide) in paragraph at lines 141--142
+ [][] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 96--98
-\OT1/ptm/m/n/10 (https://github.com/uds-lsv/llmft) which was cre-ated
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [2 <./fig_1_loss_structure_comparison.png>]
+Underfull \hbox (badness 1147) in paragraph at lines 170--172
+ []\OT1/ptm/b/n/10 FT setup \OT1/ptm/m/n/10 We per-form a few-shot PBFT with the
  []
 
 
-Underfull \hbox (badness 1052) in paragraph at lines 143--144
-[]\OT1/ptm/b/n/10 Important: This sec-tion should be rig-or-ous and
- []
+Underfull \hbox (badness 10000) in paragraph at lines 170--172
 
-
-Underfull \vbox (badness 2865) has occurred while \output is active []
-
- [2]
-Underfull \hbox (badness 1331) in paragraph at lines 169--170
-[]\OT1/ptm/m/n/10 (5 points) Over-all clar-ity. Is the manuscript self-
  []
 
 [3]
-Underfull \hbox (badness 10000) in paragraph at lines 288--294
+<Fig1_comparing number of context examples.png, id=44, 1734.48pt x 1332.98pt>
+File: Fig1_comparing number of context examples.png Graphic file (type png)
+<use Fig1_comparing number of context examples.png>
+Package pdftex.def Info: Fig1_comparing number of context examples.png  used on input line 188.
+(pdftex.def)             Requested size: 248.42812pt x 190.90758pt.
 
+Overfull \hbox (11.29218pt too wide) in paragraph at lines 188--189
+ [][] 
  []
 
-[4] [5] (./egpaper_for_review.bbl (./egpaper_for_review.brf)
+<Fig2_comparing topk.png, id=45, 1734.48pt x 1332.98pt>
+File: Fig2_comparing topk.png Graphic file (type png)
+<use Fig2_comparing topk.png>
+Package pdftex.def Info: Fig2_comparing topk.png  used on input line 198.
+(pdftex.def)             Requested size: 248.42812pt x 190.90758pt.
+
+Overfull \hbox (11.29218pt too wide) in paragraph at lines 198--199
+ [][] 
+ []
+
+<Fig4_CE_KLD_comparing_id_ood.png, id=46, 714.7503pt x 570.933pt>
+File: Fig4_CE_KLD_comparing_id_ood.png Graphic file (type png)
+<use Fig4_CE_KLD_comparing_id_ood.png>
+Package pdftex.def Info: Fig4_CE_KLD_comparing_id_ood.png  used on input line 207.
+(pdftex.def)             Requested size: 248.42812pt x 198.44437pt.
+
+Overfull \hbox (11.29218pt too wide) in paragraph at lines 207--208
+ [][] 
+ []
+
+
+Underfull \vbox (badness 1406) has occurred while \output is active []
+
+ [4 <./Fig1_comparing number of context examples.png> <./Fig2_comparing topk.png> <./Fig4_CE_KLD_comparing_id_ood.png>]
+Underfull \hbox (badness 6364) in paragraph at lines 249--249
+\OT1/ptm/m/n/10 ple-men-ta-tion of the loss
+ []
+
+
+Underfull \hbox (badness 4543) in paragraph at lines 253--253
+[]\OT1/ptm/m/n/10 Research, ex-per-i-ment de-
+ []
+
+
+Overfull \hbox (2.56618pt too wide) in paragraph at lines 244--260
+ [] 
+ []
+
+(./egpaper_for_review.bbl (./egpaper_for_review.brf)
 \tf@brf=\write3
 \openout3 = `egpaper_for_review.brf'.
 
 
-Underfull \hbox (badness 2376) in paragraph at lines 12--12
-[]\OT1/ptm/m/n/9 FirstName Alpher and First-Name Fotheringham-Smythe.
- []
 
+LaTeX Warning: Empty `thebibliography' environment on input line 3.
 
-Underfull \hbox (badness 1132) in paragraph at lines 17--17
-[]\OT1/ptm/m/n/9 FirstName Alpher, First-Name Fotheringham-Smythe, and
- []
-
-) [6
-
-] (./egpaper_for_review.aux)
+) [5] [6] (./egpaper_for_review.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -388,21 +441,21 @@ L3 programming layer <2024-02-20>
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `egpaper_for_review.brf' has not changed.
-(rerunfilecheck)             Checksum: 95557A8614E127B570728FF6C9A1D960;466.
+(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 10249 strings out of 474116
- 156722 string characters out of 5743682
+ 10215 strings out of 474116
+ 157048 string characters out of 5743682
  1949187 words of memory out of 5000000
- 32405 multiletter control sequences out of 15000+600000
- 589517 words of font info for 104 fonts, out of 8000000 for 9000
+ 32390 multiletter control sequences out of 15000+600000
+ 578652 words of font info for 84 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 90i,10n,93p,1154b,447s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on egpaper_for_review.pdf (6 pages, 156695 bytes).
+ 90i,11n,93p,1271b,455s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
+Output written on egpaper_for_review.pdf (6 pages, 1151063 bytes).
 PDF statistics:
- 161 PDF objects out of 1000 (max. 8388607)
- 127 compressed objects within 2 object streams
- 39 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 118 PDF objects out of 1000 (max. 8388607)
+ 85 compressed objects within 1 object stream
+ 32 named destinations out of 1000 (max. 500000)
+ 21 words of extra memory for PDF output out of 10000 (max. 10000000)
 
